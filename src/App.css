@@ -10,7 +10,7 @@ body{
 }
 
 ul{
-  margin: 3rem;
+  margin: 2rem auto;
   max-width: 1000px;
   display: flex;
   justify-content: flex-start;
