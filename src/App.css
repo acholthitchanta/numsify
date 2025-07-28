@@ -6,12 +6,12 @@
 }
 
 body{
-  background-color: black;
+  background-color: rgb(18, 18, 18);
 }
 
 ul{
-  margin: 2rem auto;
-  max-width: 800px;
+  margin: 3rem;
+  max-width: 1000px;
   display: flex;
   justify-content: flex-start;
   flex-direction: column;
@@ -31,9 +31,10 @@ li{
 li img{
   object-fit: contain;
   border-radius: 15px;
-  height: 5rem;
-  width: 5rem;
+  height: 100px;
+  width: 100px;
   margin-right: 5rem;
+
 }
 
 li:hover{

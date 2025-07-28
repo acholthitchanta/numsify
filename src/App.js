@@ -136,52 +136,22 @@ export default function App() {
     )
   }
 
-
     return (
       <>
-      <SearchBar></SearchBar>
-      <div className="Artists">
-        <ul>
-        {artist.map((artistData, index)=>(
-          <li key={artistData.data.uri || index}>
-            <img src={artistData?.data?.visuals?.avatarImage?.sources[0].url}></img>
-            <div class="info">
-              {artistData?.data?.profile?.name || 'Unknown Artist'}
-            </div>
-          </li>
-        )
-        )}
-        </ul>
-      </div>
-      <div className="Albums">
-          <ul>
-          {album.map((albumData, index)=>(
-          <li key={albumData.data.uri || index}>
-            <img src={albumData?.data?.coverArt?.sources[0].url}></img>
-
-            <div class="info">
-              {albumData?.data?.name || 'Unknown Album'}<span>({albumData?.data?.date?.year})</span>
-              <p className="artist">{albumData?.data?.artists?.items[0].profile.name}</p>
-            </div>
-
-          </li>
-          )
-          )}
-          </ul>
-      </div>
-      <div className="Tracks">
-          <ul>
-          {track.map((trackData, index)=>(
-          <li key={trackData.data.uri || index}>
-            {trackData?.data?.name || 'Unknown Album'}
-          </li>
-          )
-          )}
-          </ul>
+      <SearchBar/>
+      <div className="search">
+        {artist.length >0 ? (
+          <ArtistResults artist={artist} />
+        ) : album.length > 0? (
+          <AlbumResults album={album} />
+        ) : track.length > 0 ? (
+          <TrackResults track={track} />
+        ) : <p>No results available</p>}
       </div>
       </>
-  );
-}
+    );
+
+  }
 
 function ArtistPage(){
   return(
@@ -194,6 +164,67 @@ function ArtistPage(){
   )
 }
 
+function ArtistResults({artist}){
+  return(
+    <ul>
+      {artist.map((artistData, index)=>(
+        <li key={artistData.data.uri || index}>
+          <>
+          <img src={artistData?.data?.visuals?.avatarImage?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+          <div class="info">
+            {artistData?.data?.profile?.name || 'Unknown Artist'}
+          </div>
+          </>
+        </li>
+      )
+      )}
+    </ul>
+  )
+}
+
+function AlbumResults({album}){
+  return(
+    <ul>
+    {album.map((albumData, index)=>(
+    <li key={albumData.data.uri || index}>
+      <>
+      <img src={albumData?.data?.coverArt?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+
+      <div class="info">
+        {albumData?.data?.name || 'Unknown Album'}<span>({albumData?.data?.date?.year})</span>
+        <p className="artist">{albumData?.data?.artists?.items[0].profile.name}</p>
+      </div>
+      </>
+
+    </li>
+    )
+    )}
+    </ul>
+  )
+}
 
 
+function TrackResults({track}){
+  return(
+      <ul>
+      {track.map((trackData, index)=>(
+      <li key={trackData.data.uri || index}>
+        <img src={trackData?.data.albumOfTrack?.coverArt?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+        <div class="info">
+          {trackData?.data?.name || 'Unknown Album'}
+          <p class="album">{trackData.data?.albumOfTrack?.name}</p>
+          <p class="artist">{
+          trackData.data?.artists?.items.map((artist, index) => (
+            artist.profile?.name + ((index < trackData.data?.artists.items.length - 1) ? ", " : "")
+          ))           
+          }
+          </p>
+        </div>
 
+      </li>
+      )
+      )}
+      </ul>
+
+  )
+}
