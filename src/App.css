@@ -19,16 +19,37 @@ ul{
 }
 
 li{
+  display: flex;
+  align-items: center;
   padding: 1rem;
   min-width: 200px;
-  font-size: 1.1rem;
   list-style: none;
   color: white;
   border-radius: 10px;
 }
 
+li img{
+  object-fit: contain;
+  border-radius: 15px;
+  height: 5rem;
+  width: 5rem;
+  margin-right: 5rem;
+}
+
 li:hover{
   background-color: rgb(43, 43, 43);
+}
+
+.info, .info > span{
+  font-size: 1.3rem;
+}
+
+.info> span{
+  margin-left: 0.5rem;
+}
+.artist{
+  color: rgb(188, 188, 188);
+  margin-bottom: 0;
 }
 
 #content-search{
@@ -41,7 +62,6 @@ li:hover{
 }
 
 #content-search > *{
-
   margin-left: 1rem;
   border-style: none;
   color: white;

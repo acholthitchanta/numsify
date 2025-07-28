@@ -7,6 +7,7 @@ export default function App() {
   const [album, setAlbum] = useState([])
   const [track, setTrack] = useState([])
   const [query, setQuery] = useState('')
+  const [image, setImage] = useState('')
   const [queryType, setQueryType] = useState('artists')
 
   const getAlbum = async(query) =>{
@@ -129,7 +130,7 @@ export default function App() {
             <option value="albums">Albums</option>
             <option value="tracks">Tracks</option>
           </select>
-        <button type="submit">Submit</button>
+        <button type="submit">Search</button>
       </form>
       </>
     )
@@ -143,7 +144,10 @@ export default function App() {
         <ul>
         {artist.map((artistData, index)=>(
           <li key={artistData.data.uri || index}>
-            {artistData?.data?.profile?.name || 'Unknown Artist'}
+            <img src={artistData?.data?.visuals?.avatarImage?.sources[0].url}></img>
+            <div class="info">
+              {artistData?.data?.profile?.name || 'Unknown Artist'}
+            </div>
           </li>
         )
         )}
@@ -153,7 +157,13 @@ export default function App() {
           <ul>
           {album.map((albumData, index)=>(
           <li key={albumData.data.uri || index}>
-            {albumData?.data?.name || 'Unknown Album'}
+            <img src={albumData?.data?.coverArt?.sources[0].url}></img>
+
+            <div class="info">
+              {albumData?.data?.name || 'Unknown Album'}<span>({albumData?.data?.date?.year})</span>
+              <p className="artist">{albumData?.data?.artists?.items[0].profile.name}</p>
+            </div>
+
           </li>
           )
           )}
