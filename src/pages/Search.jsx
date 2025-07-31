@@ -1,6 +1,8 @@
 import { useState, useEffect } from 'react';
 import { Nav } from '../components/nav';
-import { MusicPage } from './MusicPage';
+import { ArtistPage } from './Artist';
+import { AlbumPage } from './Album';
+import { TrackPage } from './Track';
 
 export function Search() {
   const [artist, setArtist] = useState([])
@@ -162,6 +164,8 @@ function ArtistResults({artist}){
   return(
     <ul className="search-results">
       {artist.map((artistData, index)=>(
+
+
         <li className="search-item" onClick={goToPage(artist, artistData.data.uri)} key={artistData.data.uri || index}>
           <>
           <img src={artistData?.data?.visuals?.avatarImage?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
