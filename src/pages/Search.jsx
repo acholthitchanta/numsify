@@ -1,13 +1,12 @@
-import React, { useState, useEffect } from 'react';
-import './App.css';
+import { useState, useEffect } from 'react';
+import { Nav } from '../components/nav';
+import { MusicPage } from './MusicPage';
 
-
-export default function App() {
+export function Search() {
   const [artist, setArtist] = useState([])
   const [album, setAlbum] = useState([])
   const [track, setTrack] = useState([])
   const [query, setQuery] = useState('')
-  const [image, setImage] = useState('')
   const [queryType, setQueryType] = useState('artists')
 
   const getAlbum = async(query) =>{
@@ -138,6 +137,7 @@ export default function App() {
 
     return (
       <>
+      <Nav/>
       <SearchBar/>
       <div className="search">
         {artist.length >0 ? (
@@ -146,32 +146,26 @@ export default function App() {
           <AlbumResults album={album} />
         ) : track.length > 0 ? (
           <TrackResults track={track} />
-        ) : <p>No results available</p>}
+        ) : <p></p>}
       </div>
       </>
     );
 
   }
 
-function ArtistPage(){
-  return(
-    <>
-      <h1 className="name">Kanye West</h1>
-      <img className="avatarImage"></img>
 
-    </>
-
-  )
+function goToPage(type, id){
+  
 }
 
 function ArtistResults({artist}){
   return(
-    <ul>
+    <ul className="search-results">
       {artist.map((artistData, index)=>(
-        <li key={artistData.data.uri || index}>
+        <li className="search-item" onClick={goToPage(artist, artistData.data.uri)} key={artistData.data.uri || index}>
           <>
           <img src={artistData?.data?.visuals?.avatarImage?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
-          <div class="info">
+          <div className="info">
             {artistData?.data?.profile?.name || 'Unknown Artist'}
           </div>
           </>
@@ -184,13 +178,13 @@ function ArtistResults({artist}){
 
 function AlbumResults({album}){
   return(
-    <ul>
+    <ul className="search-results">
     {album.map((albumData, index)=>(
-    <li key={albumData.data.uri || index}>
+    <li className="search-item"  key={albumData.data.uri || index}>
       <>
       <img src={albumData?.data?.coverArt?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
 
-      <div class="info">
+      <div className="info">
         {albumData?.data?.name || 'Unknown Album'}<span>({albumData?.data?.date?.year})</span>
         <p className="artist">{albumData?.data?.artists?.items[0].profile.name}</p>
       </div>
@@ -206,9 +200,9 @@ function AlbumResults({album}){
 
 function TrackResults({track}){
   return(
-      <ul>
+      <ul className="search-results">
       {track.map((trackData, index)=>(
-      <li key={trackData.data.uri || index}>
+      <li className="search-item"  key={trackData.data.uri || index}>
         <img src={trackData?.data.albumOfTrack?.coverArt?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
         <div class="info">
           {trackData?.data?.name || 'Unknown Album'}
