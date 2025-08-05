@@ -12,7 +12,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HomePage/>}/>
         <Route path="/search" element={<Search/>}/>
-        <Route path="/artistpage" element={<ArtistPage uri="spotify:artist:47zz7sob9NUcODy0BTDvKx"/>}/>
+        <Route path="/artistpage" element={<ArtistPage uri="spotify:artist:5K4W6rqBFWDnAN6FQUkS6x"/>}/>
         <Route path="/albumpage" element={<AlbumPage/>}/>
         <Route path="/trackpage" element={<TrackPage/>}/>
   

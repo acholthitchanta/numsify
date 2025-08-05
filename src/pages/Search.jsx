@@ -18,7 +18,7 @@ export function Search() {
     const options = {
       method: 'GET',
       headers: {
-        'x-rapidapi-key': '74c22c0da3msh5eb78bf4fa50947p198d37jsn3564c6bd84e5',
+        'x-rapidapi-key': '4a8ddad952msh50928f5ffa51466p1bd66ajsn1af966580d01',
         'x-rapidapi-host': 'spotify23.p.rapidapi.com'
       }
     };
@@ -42,7 +42,7 @@ export function Search() {
       const options = {
         method: 'GET',
         headers: {
-          'x-rapidapi-key': '74c22c0da3msh5eb78bf4fa50947p198d37jsn3564c6bd84e5',
+          'x-rapidapi-key': '4a8ddad952msh50928f5ffa51466p1bd66ajsn1af966580d01',
           'x-rapidapi-host': 'spotify23.p.rapidapi.com'
         }
       };
@@ -65,7 +65,7 @@ export function Search() {
       const options = {
         method: 'GET',
         headers: {
-          'x-rapidapi-key': '74c22c0da3msh5eb78bf4fa50947p198d37jsn3564c6bd84e5',
+          'x-rapidapi-key': '4a8ddad952msh50928f5ffa51466p1bd66ajsn1af966580d01',
           'x-rapidapi-host': 'spotify23.p.rapidapi.com'
         }
       };
@@ -156,17 +156,15 @@ export function Search() {
   }
 
 
-function goToPage(type, id){
-  
-}
+
+
 
 function ArtistResults({artist}){
+  const [uri, setURI] = useState([])
   return(
     <ul className="search-results">
       {artist.map((artistData, index)=>(
-
-
-        <li className="search-item" onClick={goToPage(artist, artistData.data.uri)} key={artistData.data.uri || index}>
+        <li className="search-item" onClick={() => {navigate("/artistpage"); setURI(artistData.data?.uri)}} key={artistData.data.uri || index}>
           <>
           <img src={artistData?.data?.visuals?.avatarImage?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
           <div className="info">
