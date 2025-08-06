@@ -1,89 +1,89 @@
 import { Nav } from "../components/nav";
+import { useEffect, useState } from "react";
+import { ArtistPage } from "./Artist";
 
 
-export function AlbumPage({id}){
+export function AlbumPage({uri}){
+        const res = uri.split(":");
+        const id = res[res.length - 1];
 
-        const getAlbumInfo= async(query) => {
-            const url = 'https://spotify23.p.rapidapi.com/albums/?ids=3IBcauSj5M2A6lTeffJzdv';
+        const [info, setInfo] = useState(null)
+        
+
+        const getAlbumInfo= async() => {
+            const url = `https://spotify23.p.rapidapi.com/albums/?ids=${id}`;
             const options = {
                 method: 'GET',
                 headers: {
-                    'x-rapidapi-key': '74c22c0da3msh5eb78bf4fa50947p198d37jsn3564c6bd84e5',
+                    'x-rapidapi-key': '4a8ddad952msh50928f5ffa51466p1bd66ajsn1af966580d01',
                     'x-rapidapi-host': 'spotify23.p.rapidapi.com'
                 }
             };
 
             try {
                 const response = await fetch(url, options);
-                const result = await response.text();
-                console.log(result);
-            } catch (error) {
-                console.error(error);
-            }
-
-        }
-
-        const getTrackInfo= async(query) => {
-            const url = 'https://spotify23.p.rapidapi.com/tracks/?ids=4WNcduiCmDNfmTEz7JvmLv';
-            const options = {
-                method: 'GET',
-                headers: {
-                    'x-rapidapi-key': '74c22c0da3msh5eb78bf4fa50947p198d37jsn3564c6bd84e5',
-                    'x-rapidapi-host': 'spotify23.p.rapidapi.com'
-                }
-            };
-
-            try {
-                const response = await fetch(url, options);
-                const result = await response.text();
-                console.log(result);
+                const result = await response.json();
+                console.log(result.albums[0]);
+                if (result) setInfo(result.albums[0]);
             } catch (error) {
                 console.error(error);
             }
         }
 
-        const getTrackRecommendations = async(query) => {
-            const url = 'https://spotify23.p.rapidapi.com/recommendations/?limit=20&seed_tracks=0c6xIDDpzE81m2q797ordA&seed_artists=4NHQUGzhtTLFvgF5SZesLK&seed_genres=classical%2Ccountry';
-            const options = {
-                method: 'GET',
-                headers: {
-                    'x-rapidapi-key': '74c22c0da3msh5eb78bf4fa50947p198d37jsn3564c6bd84e5',
-                    'x-rapidapi-host': 'spotify23.p.rapidapi.com'
-                }
-            };
 
-            try {
-                const response = await fetch(url, options);
-                const result = await response.text();
-                console.log(result);
-            } catch (error) {
-                console.error(error);
-            }
+        function Artists({result}){
+
+            const artists = result?.artists || [];
+            console.log(artists);
+
+            return(            
+                
+                <ul className="album-artists">
+                {artists.map((artist, index)=>(
+                    <li className="album-artist" key={artist.id || index}>
+                        {artist.name || 'Unknown Artist'}
+                    </li>
+                )
+                )}
+                </ul>
+
+            )
+
         }
 
-        const getTrackLyrics = async(query) => {
-            const url = 'https://spotify23.p.rapidapi.com/track_lyrics/?id=4snRyiaLyvTMui0hzp8MF7';
-            const options = {
-                method: 'GET',
-                headers: {
-                    'x-rapidapi-key': '74c22c0da3msh5eb78bf4fa50947p198d37jsn3564c6bd84e5',
-                    'x-rapidapi-host': 'spotify23.p.rapidapi.com'
-                }
-            };
+        function AlbumProfile({result}){
 
-            try {
-                const response = await fetch(url, options);
-                const result = await response.text();
-                console.log(result);
-            } catch (error) {
-                console.error(error);
-            }
+
+            const albumCover = result?.images[0]?.url;
+            const albumTitle = result?.name;
+            const releaseDate = result?.release_date
+            
+
+            return(
+                <>
+                    <img src={albumCover || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+                    <h1>{albumTitle}</h1>
+                    <p>Popularity: {result?.popularity}</p>
+                    <p>Released: {releaseDate}</p>
+
+                </>
+
+            )
         }
+
+
+        useEffect(() => {
+            getAlbumInfo();
+        }, [])
 
 
     return(
         <>
             <Nav/>
+
+            <AlbumProfile result={info}/>
+            <Artists result={info} />
+
         </>
     )
 

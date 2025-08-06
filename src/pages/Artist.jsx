@@ -1,5 +1,7 @@
 import { Nav } from "../components/nav";
 import { useState, useEffect } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
+
 
 
 export function ArtistPage({uri}){
@@ -8,7 +10,6 @@ export function ArtistPage({uri}){
         const id = res[res.length - 1];
 
         const [info, setInfo] = useState([])
-        const [discog, setDiscog] = useState([])
         
 
         const getArtistInfo = async() => {
@@ -87,7 +88,7 @@ export function ArtistPage({uri}){
                     </div>
                 </div>
 
-                <p class="play-count">{ trackData.track.playcount? trackData.track.playcount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0"}</p>
+                <p className="play-count">{ trackData.track.playcount? trackData.track.playcount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0"}</p>
 
                 </>
                 </li>

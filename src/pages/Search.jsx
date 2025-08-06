@@ -1,8 +1,13 @@
 import { useState, useEffect } from 'react';
+import React from 'react';
 import { Nav } from '../components/nav';
 import { ArtistPage } from './Artist';
 import { AlbumPage } from './Album';
 import { TrackPage } from './Track';
+import { HashRouter as Router, Routes, Route } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
+
+
 
 export function Search() {
   const [artist, setArtist] = useState([])
@@ -160,11 +165,17 @@ export function Search() {
 
 
 function ArtistResults({artist}){
-  const [uri, setURI] = useState([])
+  const navigate = useNavigate();
+  const [search, setSearch] = useState([]);
+
+  const goToNewPage=()=>{
+    navigate("/artistpage");
+  }
+
   return(
     <ul className="search-results">
       {artist.map((artistData, index)=>(
-        <li className="search-item" onClick={() => {navigate("/artistpage"); setURI(artistData.data?.uri)}} key={artistData.data.uri || index}>
+        <li className="search-item" onClick={() => {setSearch(artistData.data.uri); goToNewPage()}} key={artistData.data.uri || index}>
           <>
           <img src={artistData?.data?.visuals?.avatarImage?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
           <div className="info">

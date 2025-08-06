@@ -10,6 +10,7 @@ export function Nav(){
                 <li><Link to="/">Home</Link></li>
                 <li><Link to="/search">Search</Link></li>
                 <li><Link to="/artistpage">Artist</Link></li>
+                <li><Link to="/albumpage">Album</Link></li>
             </ul>
         </nav>
         </>
