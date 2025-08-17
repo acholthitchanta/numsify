@@ -12,7 +12,7 @@ li{
 
 body{
   background-color: rgb(18, 18, 18);
-  width: 100%;
+  width: 100vw;
   overflow-x: hidden;
 }
 
@@ -142,12 +142,13 @@ nav ul li, nav ul li a{
 
 /*artist page*/
 .page{
-  gap: 5rem;
+  gap: 2rem;
   justify-content: flex-start;
   display: flex;
   margin: auto;
   padding: 1rem 3rem;
 }
+
 .track-results{
   display: flex;
   flex-direction: column;
@@ -169,7 +170,7 @@ nav ul li, nav ul li a{
 .track-item{
   margin: 0;
   align-items: center;
-  max-width: 800px;
+  max-width: 900px;
   display: flex;
   gap: 0.5rem;
   height: 40px;
@@ -235,9 +236,10 @@ nav ul li, nav ul li a{
 }
 
 .profile{
+  max-width: 500px;
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
-  align-items: center;
 }
 
 .profile img{
@@ -246,13 +248,15 @@ nav ul li, nav ul li a{
 }
 
 .profile h1{
-  font-size: 5rem;
+  font-size: 4rem;
   margin: 1rem;
 }
 
 
 .stats .number{
   font-size: 3rem;
+  margin-left: 1rem;
+  margin-top: 0rem;
   font-weight: bold;
   font-family: "Trebuchet MS"
 }
@@ -263,8 +267,44 @@ nav ul li, nav ul li a{
 }
 
 .stats{
+  margin: 0 auto;
   display: flex;
   flex-direction: column;
 }
+
+/*album search page*/
+
+.track-preview{
+  margin-left: auto;
+}
+
+.tracklist{
+  gap: 6vw;
+}
+
+.whomadeit{
+  font-size: 2rem;
+  margin: 0;
+}
+
+.other-stats{
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+}
+
+.stat{
+  align-items: left;
+}
+
+.stat .number{
+  margin: 0;
+}
+
+.discography{
+  margin: 0 auto;
+  margin-left: 0;
+}
+
 
 

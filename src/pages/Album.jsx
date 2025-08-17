@@ -1,10 +1,15 @@
 import { Nav } from "../components/nav";
 import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
 import { ArtistPage } from "./Artist";
 
+// spotify:album:1YgekJJTEueWDaMr7BYqPk
 
-export function AlbumPage({uri}){
-        const res = uri.split(":");
+
+export function AlbumPage(){
+        const uri = useParams();
+
+        const res = uri.id.split(":");
         const id = res[res.length - 1];
 
         const [info, setInfo] = useState(null)
@@ -34,18 +39,14 @@ export function AlbumPage({uri}){
         function Artists({result}){
 
             const artists = result?.artists || [];
-            console.log(artists);
 
             return(            
-                
-                <ul className="album-artists">
+                <p className="whomadeit">
                 {artists.map((artist, index)=>(
-                    <li className="album-artist" key={artist.id || index}>
-                        {artist.name || 'Unknown Artist'}
-                    </li>
+                    artist.name + ((index < artists.length - 1) ? ", " : "")
                 )
                 )}
-                </ul>
+                </p>
 
             )
 
@@ -56,19 +57,64 @@ export function AlbumPage({uri}){
 
             const albumCover = result?.images[0]?.url;
             const albumTitle = result?.name;
-            const releaseDate = result?.release_date
-            
 
+        
             return(
                 <>
                     <img src={albumCover || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
                     <h1>{albumTitle}</h1>
-                    <p>Popularity: {result?.popularity}</p>
-                    <p>Released: {releaseDate}</p>
+                </>
+
+            )
+        }
+
+
+        function AlbumInfo({result}){
+            const releaseDate = result?.release_date;
+            const label = result?.label;
+            
+
+            return(
+                <>
+                    <p>Released:</p> <span className="number">{releaseDate}</span>
+
+                    <div class="other-stats">
+                        <div class="stat"><p> Label:</p> <span className="number">{label}</span></div>
+                        <div class="stat"><p>Popularity:</p> <span className="number">{result?.popularity}</span></div>
+                    </div>
+
 
                 </>
 
             )
+        }
+
+        function TrackList({result}){
+            const tracks = result?.tracks?.items || [];
+
+            return(
+                <ul className="track-results">
+                {tracks.map((trackData, index)=>(
+                    <li className="track-item tracklist" key={trackData.id || index}>
+                    <>
+
+                    <div className="track-info">
+                        <div className="track-name">
+                            {trackData.name || 'Unknown track'}
+                        </div>
+                    </div>
+
+             
+                    <audio controls className="track-preview"> <source src={trackData.preview_url}></source></audio>
+
+                    </>
+                    </li>
+                )
+                )}
+                </ul>
+
+            )
+  
         }
 
 
@@ -81,8 +127,27 @@ export function AlbumPage({uri}){
         <>
             <Nav/>
 
-            <AlbumProfile result={info}/>
-            <Artists result={info} />
+            <div className="page">
+
+                <div className="profile">
+                    <AlbumProfile result={info} />
+
+                        <Artists result={info}/>
+
+
+                    <div class="stats">
+                        <AlbumInfo result={info} />
+                    </div>
+                </div>
+
+                <div class="discography">
+                        <h2>Discography</h2>
+                        <TrackList result={info}/> 
+                </div>
+
+            </div>
+
+
 
         </>
     )

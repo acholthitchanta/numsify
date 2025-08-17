@@ -7,6 +7,9 @@ import { TrackPage } from './Track';
 import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { useNavigate, useParams } from 'react-router-dom';
 
+const CLIENT_ID="a99c2d456efd4650823ec7ceef8ddcdc"
+const CLIENT_SECRET="072b240960ae4144ad02cdc5b7ad6485"
+
 
 
 export function Search() {
@@ -16,75 +19,107 @@ export function Search() {
   const [query, setQuery] = useState('')
   const [queryType, setQueryType] = useState('artists')
 
-  const getAlbum = async(query) =>{
-    const encodedQuery = encodeURIComponent(query.trim());
+   const [accessToken, setAccessToken] = useState("")
 
-    const url = `https://spotify23.p.rapidapi.com/search/?q=${encodedQuery}&type=albums&offset=0&limit=10&numberOfTopResults=5`;
-    const options = {
-      method: 'GET',
-      headers: {
-        'x-rapidapi-key': '4a8ddad952msh50928f5ffa51466p1bd66ajsn1af966580d01',
-        'x-rapidapi-host': 'spotify23.p.rapidapi.com'
+    useEffect(() => {
+      var authParameters = {
+        method: 'POST', 
+        headers: {
+          'Content-Type': 'application/x-www-form-urlencoded'
+        },
+        body: 'grant_type=client_credentials&client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET
       }
-    };
+      fetch('https://accounts.spotify.com/api/token', authParameters)
+        .then(result => result.json())
+        .then(data => setAccessToken(data.access_token))
 
-    try {
-      const response = await fetch(url, options);
-      const result = await response.json();
-      setAlbum(result?.albums?.items || []);
-      console.log(result?.albums?.items);
-    } catch (error) {
-      console.error(error);
-      setAlbum([])
+    }, [])
+
+
+    const getArtist = async(query) =>{
+      console.log("Search for " + query);
+
+      var searchParameters = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken
+        }
+      }
+
+      const encodedQuery = encodeURIComponent(query.trim());
+
+      //get request using search to get artist id
+      const response = await fetch(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=artist&offset=0&limit=10&numberOfTopResults=5`,searchParameters)
+        .then(response => response.json())
+        .then(data => {
+          if (data){
+            setArtist(data.artists?.items || [])
+          }
+          else{
+            setArtist([])
+            console.log("no results found")
+          }
+        })
     }
-  }
+
+
+
+    const getAlbum = async(query) =>{
+      console.log("Search for " + query);
+
+      var searchParameters = {
+        method: 'GET',
+        headers: {
+          'Content-Type': 'application/json',
+          'Authorization': 'Bearer ' + accessToken
+        }
+      }
+
+      const encodedQuery = encodeURIComponent(query.trim());
+
+      //get request using search to get artist id
+      const response = await fetch(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=album&offset=0&limit=10&numberOfTopResults=5`,searchParameters)
+        .then(response => response.json())
+        .then(data => {
+          if (data){
+            setAlbum(data.albums?.items || [])
+          }
+          else{
+            setAlbum([])
+            console.log("no results found")
+          }
+        })
+    }
+
+
 
 
   const getTrack = async(query) =>{
-      const encodedQuery = encodeURIComponent(query.trim());
+    const encodedQuery = encodeURIComponent(query.trim());
 
-      const url = `https://spotify23.p.rapidapi.com/search/?q=${encodedQuery}&type=tracks&offset=0&limit=10&numberOfTopResults=5`;
-      const options = {
-        method: 'GET',
-        headers: {
-          'x-rapidapi-key': '4a8ddad952msh50928f5ffa51466p1bd66ajsn1af966580d01',
-          'x-rapidapi-host': 'spotify23.p.rapidapi.com'
-        }
-      };
-
-      try {
-        const response = await fetch(url, options);
-        const result = await response.json();
-        setTrack(result?.tracks?.items || []);
-        console.log(result?.tracks?.items);
-      } catch (error) {
-        console.error(error);
-        setTrack([])
+    var searchParameters = {
+      method: 'GET',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': 'Bearer ' + accessToken
       }
+    }
+
+    const response = await fetch(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&offset=0&limit=10&numberOfTopResults=5`,searchParameters)
+      .then(response => response.json())
+      .then(data => {
+        if (data){
+          setTrack(data.tracks?.items || [])
+        }
+        else{
+          setTrack([])
+          console.log("no results found")
+        }
+      })
 }
 
-  const getArtist = async(query) =>{
-      const encodedQuery = encodeURIComponent(query.trim());
 
-      const url = `https://spotify23.p.rapidapi.com/search/?q=${encodedQuery}&type=artist&offset=0&limit=10&numberOfTopResults=5`;
-      const options = {
-        method: 'GET',
-        headers: {
-          'x-rapidapi-key': '4a8ddad952msh50928f5ffa51466p1bd66ajsn1af966580d01',
-          'x-rapidapi-host': 'spotify23.p.rapidapi.com'
-        }
-      };
-
-      try {
-        const response = await fetch(url, options);
-        const result = await response.json();
-        setArtist(result?.artists?.items || []);
-        console.log(result?.artists?.items);
-      } catch (error) {
-        console.error(error);
-        setArtist([])
-      }
-}
 
   useEffect(() => {
     if (query){
@@ -166,7 +201,6 @@ export function Search() {
 
 function ArtistResults({artist}){
   const navigate = useNavigate();
-  const [search, setSearch] = useState([]);
 
   const goToNewPage=()=>{
     navigate("/artistpage");
@@ -175,14 +209,16 @@ function ArtistResults({artist}){
   return(
     <ul className="search-results">
       {artist.map((artistData, index)=>(
-        <li className="search-item" onClick={() => {setSearch(artistData.data.uri); goToNewPage()}} key={artistData.data.uri || index}>
+        <>
+        <li className="search-item" onClick={() => {navigate(`/artist/${artistData.uri}`)}} key={artistData.uri || index}>
           <>
-          <img src={artistData?.data?.visuals?.avatarImage?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+          <img src={artistData?.images[2]?.url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
           <div className="info">
-            {artistData?.data?.profile?.name || 'Unknown Artist'}
+            {artistData?.name || 'Unknown Artist'}
           </div>
           </>
         </li>
+        </>
       )
       )}
     </ul>
@@ -193,13 +229,17 @@ function AlbumResults({album}){
   return(
     <ul className="search-results">
     {album.map((albumData, index)=>(
-    <li className="search-item"  key={albumData.data.uri || index}>
+    <li className="search-item"  onClick={() => {navigate(`/artist/${artistData.uri}`)}} key={albumData.uri || index}>
       <>
-      <img src={albumData?.data?.coverArt?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+      <img src={albumData.images[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
 
       <div className="info">
-        {albumData?.data?.name || 'Unknown Album'}<span>({albumData?.data?.date?.year})</span>
-        <p className="artist">{albumData?.data?.artists?.items[0].profile.name}</p>
+        {albumData.name || 'Unknown Album'}<span>({albumData.release_date.slice(0,4)})</span>
+        <p className="artist">{
+          albumData.artists.map((artist, index) => (
+            artist.name + ((index < albumData.artists.length - 1) ? ", " : "")
+          ))           
+          }</p>
       </div>
       </>
 
@@ -215,14 +255,14 @@ function TrackResults({track}){
   return(
       <ul className="search-results">
       {track.map((trackData, index)=>(
-      <li className="search-item"  key={trackData.data.uri || index}>
-        <img src={trackData?.data.albumOfTrack?.coverArt?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+      <li className="search-item"  key={trackData.uri || index}>
+        <img src={trackData?.album?.images[2].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
         <div class="info">
-          {trackData?.data?.name || 'Unknown Album'}
-          <p class="album">{trackData.data?.albumOfTrack?.name}</p>
+          {trackData?.name || 'Unknown Album'}
+          <p class="album">{trackData.album.name}</p>
           <p class="artist">{
-          trackData.data?.artists?.items.map((artist, index) => (
-            artist.profile?.name + ((index < trackData.data?.artists.items.length - 1) ? ", " : "")
+          trackData.artists.map((artist, index) => (
+            artist.name + ((index < trackData.artists.length - 1) ? ", " : "")
           ))           
           }
           </p>

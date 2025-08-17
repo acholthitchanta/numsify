@@ -3,45 +3,157 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 
+const CLIENT_ID="a99c2d456efd4650823ec7ceef8ddcdc"
+const CLIENT_SECRET="072b240960ae4144ad02cdc5b7ad6485"
 
-export function ArtistPage({uri}){
+const lastfm_key = "3b900eb4942c6d4adbd1b70ecf2376a2";
+const lastfm_secret = "ae30be50429067fe1407a804ea85bf34";
 
-        const res = uri.split(":");
+
+
+export function ArtistPage(){
+        const uri = useParams();
+
+        const res = uri.id.split(":");
         const id = res[res.length - 1];
 
-        const [info, setInfo] = useState([])
+        const [info, setInfo] = useState({})
+
+        const [albums, setAlbums] = useState([]);
+        const [topTracks, setTopTracks] = useState([]);
+        const [relatedArtists, setRelatedArtists] = useState([]);
+
+
+
+        const [accessToken, setAccessToken] = useState("")
         
+        useEffect(() => {
+            var authParameters = {
+            method: 'POST', 
+            headers: {
+                'Content-Type': 'application/x-www-form-urlencoded'
+            },
+            body: 'grant_type=client_credentials&client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET
+            }
+            fetch('https://accounts.spotify.com/api/token', authParameters)
+            .then(result => result.json())
+            .then(data => setAccessToken(data.access_token))
+    
+        }, [])
+
 
         const getArtistInfo = async() => {
-            const url = `https://spotify23.p.rapidapi.com/artist_overview/?id=${id}`;
-            const options = {
-            method: 'GET',
-            headers: {
-                'x-rapidapi-key': '4a8ddad952msh50928f5ffa51466p1bd66ajsn1af966580d01',
-                'x-rapidapi-host': 'spotify23.p.rapidapi.com'
-            }};
 
-            try {
-                const response = await fetch(url, options);
-                const result = await response.json()
-                console.log(result?.data?.artist)
-                setInfo(result?.data?.artist || []);
 
-            } catch (error) {
-                console.error(error);
+            var searchParameters = {
+                method: 'GET',
+                headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + accessToken
+                }
+            }
+    
+            //get request using search to get artist id
+            const response = await fetch(`https://api.spotify.com/v1/artists/${id}`,searchParameters)
+                .then(response => response.json())
+                .then(data => {
+                if (data){
+                    setInfo(data)
+                    getRelatedArtists(data.name || "Unknown Artist");
+
+                }
+                else{
+                    console.log("no results found")
+                }
+                })
+
             }
 
-        }
 
-        function ArtistProfile({result}){
-            const image = result?.visuals?.avatarImage?.sources[0].url;
+            const getArtistAlbums = async() => {
 
-            const name = result?.profile?.name;
+
+                var searchParameters = {
+                    method: 'GET',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                    }
+                }
+        
+                //get request using search to get artist id
+                const response = await fetch(`https://api.spotify.com/v1/artists/${id}/albums`,searchParameters)
+                    .then(response => response.json())
+                    .then(data => {
+                    if (data){
+                        setAlbums(data.items || [])
+                    }
+                    else{
+                        console.log("no results found")
+                    }
+                    })
+
+            }
+
+
+            const getTopTracks = async() => {
+
+
+                var searchParameters = {
+                    method: 'GET',
+                    headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                    }
+                }
+        
+                //get request using search to get artist id
+                const response = await fetch(`https://api.spotify.com/v1/artists/${id}/top-tracks`,searchParameters)
+                    .then(response => response.json())
+                    .then(data => {
+                    if (data){
+                        setTopTracks(data.tracks)
+                    }
+                    else{
+                        console.log("no results found")
+                    }
+                    })
+
+            }
+
+
+            const getRelatedArtists = async(artist) => {;
+
+
+                const url = `https://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=${artist}&api_key=${lastfm_key}&format=json&limit=10`;
+                
+                const response = await fetch(url)
+                .then (response => response.json())
+                .then(data =>{
+                    if (data){
+                        setRelatedArtists(data.similarartists.artist || [])
+                        console.log(data.similarartists.artist)
+                    }
+                    else{
+                        console.log("no results found")
+                    }
+                })
+            }
+
+        
+
+
+
+
+
+        function ArtistProfile(){
+            const image = info.images ? info.images[0].url : "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg";
+            const name = info.name || "Unknown Artist";
 
             return(
                 <>
                     <div className="profile">
-                        <img src={image || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+                        <img src={image}></img>
                         <h1>{name}</h1>
                     </div>
 
@@ -50,18 +162,16 @@ export function ArtistPage({uri}){
             )
         }
 
-        function DiscogResults({result}){
-
-            const albums = result?.discography?.albums?.items || [];
+        function DiscogResults(){
             
             return(
             <ul className="discog-results">
-            {albums.toReversed().map((discogData, index)=>(
+            {albums.toReversed().filter(discogData => discogData.album_type == "album").map((discogData, index)=>(
                 <li className="discog-item" key={discogData.id || index}>
                 <>
-                <img src={discogData.releases?.items[0].coverArt?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+                <img src={discogData.images[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
                 <div className="info">
-                    {discogData.releases.items[0].name || 'Unknown Album'} ({discogData.releases.items[0].date.year })
+                    {discogData.name || 'Unknown Album'} ({discogData.release_date.slice(0,4) })
                 </div>
                 </>
                 </li>
@@ -71,24 +181,29 @@ export function ArtistPage({uri}){
             )
         }
 
-        function TopTracks({result}){
+        function TopTracks(){
 
-            const tracks = result?.discography?.topTracks?.items || [];
+
+            function millisToMinutesAndSeconds(millis) {
+                var minutes = Math.floor(millis / 60000);
+                var seconds = ((millis % 60000) / 1000).toFixed(0);
+                return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+            }       
             
             return(
             <ul className="track-results">
-            {tracks.slice(0,5).map((trackData, index)=>(
+            {topTracks.slice(0,5).map((trackData, index)=>(
                 <li className="track-item" key={trackData.id || index}>
                 <>
 
                 <div className="track-info">
-                    <img src={trackData.track?.album?.coverArt?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+                    <img src={trackData.album.images[2].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
                     <div className="track-name">
-                        {trackData.track?.name || 'Unknown track'}
+                        {trackData.name || 'Unknown track'}
                     </div>
                 </div>
 
-                <p className="play-count">{ trackData.track.playcount? trackData.track.playcount.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0"}</p>
+                <p className="play-count">{millisToMinutesAndSeconds(trackData.duration_ms)}</p>
 
                 </>
                 </li>
@@ -98,10 +213,8 @@ export function ArtistPage({uri}){
             )
         }
 
-        function RelatedArtists({result}){
+        function RelatedArtists(){
 
-            const relatedArtists = result?.relatedContent?.relatedArtists?.items || [];
-            
             return(
 
             <>
@@ -110,11 +223,11 @@ export function ArtistPage({uri}){
             <h2>Related Artists</h2>      
             <ul class="artist-list">
             {relatedArtists.slice(0,7).map((artist, index)=>(
-                <li className="artist-item" key={artist.id || index}>
+                <li className="artist-item" key={artist.url || index}>
                 <>
-                <img src={artist.visuals?.avatarImage?.sources[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+                <img src={artist.image[0]["#text"] || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
                 <div className="artist-info">
-                    {artist.profile.name || 'Unknown Artist'}
+                    {artist.name || 'Unknown Artist'}
                 </div>
                 </>
                 </li>
@@ -128,24 +241,28 @@ export function ArtistPage({uri}){
 
         }
 
-        function ArtistStats({result}){
+        function ArtistStats(){
 
-            const stats = result?.stats || [];
-            const followers = stats.followers? stats.followers.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0";
+            const followers = info.followers? info.followers.total.toString().replace(/\B(?=(\d{3})+(?!\d))/g, ",") : "0";
 
             return(
                 <>
                     <p>followers</p> <span class="number">{followers}</span>
-                    <p id="world-rank">world rank</p> <span class="number">#{stats.worldRank}</span>
+                    <p id="popularity">popularity</p> <span class="number">{info.popularity}%</span>
 
                 </>
             )
         }
 
 
-    useEffect(() => {
-        getArtistInfo();
-    }, [])
+        useEffect(() => {
+            if (accessToken && id) {
+                getArtistInfo();
+                getArtistAlbums();
+                getTopTracks();
+
+            }
+        }, [accessToken, id]);
 
 
     return(
@@ -153,15 +270,14 @@ export function ArtistPage({uri}){
             <Nav/>
             <div className="page">
                 <div className="profile">
-                <ArtistProfile result={info} />
-                <div className="stats">
-                    <ArtistStats result={info}/>
-                </div>
+                    <ArtistProfile result={info} />
+                    <div className="stats">
+                        <ArtistStats result={info}/>
+                    </div>
 
                 </div>
 
                 <div class="info">
-
                     <div className="top-tracks">
                         <h2>Top Tracks</h2>
                         <TopTracks result={info}/>
@@ -169,7 +285,7 @@ export function ArtistPage({uri}){
 
                     <div className="discog-section">
                         <h2>Discography</h2>
-                        <DiscogResults result={info}/>
+                        <DiscogResults result={albums}/>
                     </div>     
                     <RelatedArtists result={info}/>
                 </div>
