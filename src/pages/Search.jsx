@@ -18,7 +18,6 @@ export function Search() {
   const [track, setTrack] = useState([])
   const [query, setQuery] = useState('')
   const [queryType, setQueryType] = useState('artists')
-
    const [accessToken, setAccessToken] = useState("")
 
     useEffect(() => {
@@ -200,11 +199,9 @@ export function Search() {
 
 
 function ArtistResults({artist}){
-  const navigate = useNavigate();
 
-  const goToNewPage=()=>{
-    navigate("/artistpage");
-  }
+    const navigate = useNavigate();
+
 
   return(
     <ul className="search-results">
@@ -226,10 +223,12 @@ function ArtistResults({artist}){
 }
 
 function AlbumResults({album}){
+    const navigate = useNavigate();
+
   return(
     <ul className="search-results">
     {album.map((albumData, index)=>(
-    <li className="search-item"  onClick={() => {navigate(`/artist/${artistData.uri}`)}} key={albumData.uri || index}>
+    <li className="search-item"  onClick={() => {navigate(`/album/${albumData.uri}`)}} key={albumData.uri || index}>
       <>
       <img src={albumData.images[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
 

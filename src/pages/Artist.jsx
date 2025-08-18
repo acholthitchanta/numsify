@@ -42,8 +42,7 @@ export function ArtistPage(){
         }, [])
 
 
-        const getArtistInfo = async() => {
-
+        const getArtistInfo = async(name) => {
 
             var searchParameters = {
                 method: 'GET',
@@ -54,7 +53,7 @@ export function ArtistPage(){
             }
     
             //get request using search to get artist id
-            const response = await fetch(`https://api.spotify.com/v1/artists/${id}`,searchParameters)
+            const response = await fetch(`https://api.spotify.com/v1/artists/${name}`,searchParameters)
                 .then(response => response.json())
                 .then(data => {
                 if (data){
@@ -216,7 +215,6 @@ export function ArtistPage(){
         function RelatedArtists(){
 
             return(
-
             <>
 
             <div className="artist-results">
@@ -257,7 +255,7 @@ export function ArtistPage(){
 
         useEffect(() => {
             if (accessToken && id) {
-                getArtistInfo();
+                getArtistInfo(id);
                 getArtistAlbums();
                 getTopTracks();
 

@@ -86,6 +86,10 @@ nav ul li, nav ul li a{
   background-color: rgb(43, 43, 43);
 }
 
+
+.info{
+  max-width: 65%;
+}
 .info, .info > span{
   font-size: 1.3rem;
 }
@@ -147,6 +151,7 @@ nav ul li, nav ul li a{
   display: flex;
   margin: auto;
   padding: 1rem 3rem;
+  max-width: 95vw;
 }
 
 .track-results{
@@ -239,6 +244,7 @@ nav ul li, nav ul li a{
   max-width: 500px;
   margin: 0 auto;
   display: flex;
+  align-items: center;
   flex-direction: column;
 }
 
@@ -249,7 +255,8 @@ nav ul li, nav ul li a{
 
 .profile h1{
   font-size: 4rem;
-  margin: 1rem;
+  margin: 1rem 0;
+  text-align: center;
 }
 
 
@@ -267,7 +274,6 @@ nav ul li, nav ul li a{
 }
 
 .stats{
-  margin: 0 auto;
   display: flex;
   flex-direction: column;
 }
@@ -293,13 +299,9 @@ nav ul li, nav ul li a{
   justify-content: space-between;
 }
 
-.stat{
-  align-items: left;
-}
 
-.stat .number{
-  margin: 0;
-}
+
+
 
 .discography{
   margin: 0 auto;
