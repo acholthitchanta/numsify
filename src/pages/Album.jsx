@@ -1,20 +1,18 @@
 import { Nav } from "../components/nav";
 import { useEffect, useState } from "react";
 import { useParams } from "react-router-dom";
-import { ArtistPage } from "./Artist";
 
 // spotify:album:1YgekJJTEueWDaMr7BYqPk
 
-
-const CLIENT_ID="a99c2d456efd4650823ec7ceef8ddcdc"
-const CLIENT_SECRET="072b240960ae4144ad02cdc5b7ad6485"
-
+const CLIENT_ID="a99c2d456efd4650823ec7ceef8ddcdc";
+const CLIENT_SECRET="072b240960ae4144ad02cdc5b7ad6485";
 
 export function AlbumPage(){
         const uri = useParams();
 
         const res = uri.id.split(":");
         const id = res[res.length - 1];
+
 
         const [info, setInfo] = useState(null)
         const [accessToken, setAccessToken] = useState("")
@@ -36,27 +34,6 @@ export function AlbumPage(){
         
 
         const getAlbumInfo= async() => {
-            const url = `https://spotify23.p.rapidapi.com/albums/?ids=${id}`;
-            const options = {
-                method: 'GET',
-                headers: {
-                    'x-rapidapi-key': '4a8ddad952msh50928f5ffa51466p1bd66ajsn1af966580d01',
-                    'x-rapidapi-host': 'spotify23.p.rapidapi.com'
-                }
-            };
-
-            try {
-                const response = await fetch(url, options);
-                const result = await response.json();
-                console.log(result.albums[0]);
-                if (result) setInfo(result.albums[0]);
-            } catch (error) {
-                console.error(error);
-            }
-        }
-
-        const getAlbum = async() =>{
-            const url = `https://api.spotify.com/v1/albums/${id}`;
             var searchParameters = {
                 method: 'GET',
                 headers: {
@@ -65,10 +42,34 @@ export function AlbumPage(){
                 }
             }
 
-            const response = await fetch(url,searchParameters)
+            const response = await fetch(`https://api.spotify.com/v1/albums/${id}`, searchParameters)
+                .then(response => response.json)
+                .then(data => {
+                    if (data){
+                        setInfo(data || [])
+                    }
+                    else{
+                        console.log("no results found")
+                    }
+
+                })
+
+        }
+
+        const getAlbum = async() =>{            
+            var searchParameters = {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'Authorization': 'Bearer ' + accessToken
+                }
+            }
+
+            const response = await fetch(`https://api.spotify.com/v1/albums/${id}`, searchParameters)
                 .then(response => response.json())
                 .then(data => {
                 if (data){
+                    setInfo(data || [])
                     console.log(data)
                 }
                 else{
@@ -81,6 +82,7 @@ export function AlbumPage(){
 
 
         function Artists({result}){
+
 
             const artists = result?.artists || [];
 
@@ -166,15 +168,13 @@ export function AlbumPage(){
   
         }
 
-
-        useEffect(() => {
-            getAlbumInfo()
-        }, [])
-
+         
         useEffect(()=>{
-            getAlbum()
+                getAlbum()
+        }, [])
+        
+    
 
-        })
 
 
     return(
@@ -191,7 +191,7 @@ export function AlbumPage(){
                     </div>
                 </div>
 
-                <div class="discography">
+                <div className="discography">
                         <h2>Tracklist</h2>
                         <TrackList result={info}/> 
                 </div>
