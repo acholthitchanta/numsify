@@ -254,12 +254,12 @@ function TrackResults({track}){
   return(
       <ul className="search-results">
       {track.map((trackData, index)=>(
-      <li className="search-item"  key={trackData.uri || index}>
+      <li className="search-item"  key={index}>
         <img src={trackData?.album?.images[2].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
-        <div class="info">
+        <div className="info">
           {trackData?.name || 'Unknown Album'}
-          <p class="album">{trackData.album.name}</p>
-          <p class="artist">{
+          <p className="album">{trackData.album.name}</p>
+          <p className="artist">{
           trackData.artists.map((artist, index) => (
             artist.name + ((index < trackData.artists.length - 1) ? ", " : "")
           ))           

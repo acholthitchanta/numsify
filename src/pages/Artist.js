@@ -24,125 +24,68 @@ export function ArtistPage(){
         const [relatedArtists, setRelatedArtists] = useState([]);
 
 
+        const artistData = async() =>{
+            try{
+                const params = new URLSearchParams({artist: id})
+                const response = await fetch(`http://localhost:4000/getArtistInfo?${params}`)
+                if(!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                setInfo(data)
+                getRelatedArtists(data.name)
 
-        const [accessToken, setAccessToken] = useState("")
-        
-        useEffect(() => {
-            var authParameters = {
-            method: 'POST', 
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded'
-            },
-            body: 'grant_type=client_credentials&client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET
+
             }
-            fetch('https://accounts.spotify.com/api/token', authParameters)
-            .then(result => result.json())
-            .then(data => setAccessToken(data.access_token))
-    
-        }, [])
-
-
-        const getArtistInfo = async(name) => {
-
-            var searchParameters = {
-                method: 'GET',
-                headers: {
-                'Content-Type': 'application/json',
-                'Authorization': 'Bearer ' + accessToken
-                }
+            catch (err){
+                console.log(err);
             }
-    
-            //get request using search to get artist id
-            const response = await fetch(`https://api.spotify.com/v1/artists/${name}`,searchParameters)
-                .then(response => response.json())
-                .then(data => {
+        }
+
+        const getArtistAlbums = async() =>{
+            try{
+                const params = new URLSearchParams({artist: id})
+                const response = await fetch(`http://localhost:4000/getArtistAlbums?${params}`);
+                if(!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                setAlbums(data.items)
+            
+            }
+            catch (err){
+                console.log(err);
+            }
+        }
+
+        const getTopTracks = async() =>{
+            try{
+                const params = new URLSearchParams({artist: id})
+                const response = await fetch(`http://localhost:4000/getArtistTracks?${params}`);
+                if(!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                setTopTracks(data.tracks)
+            
+            }
+            catch (err){
+                console.log(err);
+            }
+        }
+
+
+        const getRelatedArtists = async(artist) => {
+
+            const url = `https://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=${artist}&api_key=${lastfm_key}&format=json&limit=10`;
+            
+            const response = await fetch(url)
+            .then (response => response.json())
+            .then(data =>{
                 if (data){
-                    setInfo(data)
-                    getRelatedArtists(data.name)
-
+                    setRelatedArtists(data.similarartists.artist || [])
                 }
                 else{
                     console.log("no results found")
                 }
-                })
-
-            }
-
-
-            const getArtistAlbums = async() => {
-
-
-                var searchParameters = {
-                    method: 'GET',
-                    headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + accessToken
-                    }
-                }
-        
-                //get request using search to get artist id
-                const response = await fetch(`https://api.spotify.com/v1/artists/${id}/albums`,searchParameters)
-                    .then(response => response.json())
-                    .then(data => {
-                    if (data){
-                        setAlbums(data.items || [])
-                    }
-                    else{
-                        console.log("no results found")
-                    }
-                    })
-
-            }
-
-
-            const getTopTracks = async() => {
-
-
-                var searchParameters = {
-                    method: 'GET',
-                    headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + accessToken
-                    }
-                }
-        
-                //get request using search to get artist id
-                const response = await fetch(`https://api.spotify.com/v1/artists/${id}/top-tracks`,searchParameters)
-                    .then(response => response.json())
-                    .then(data => {
-                    if (data){
-                        setTopTracks(data.tracks)
-                    }
-                    else{
-                        console.log("no results found")
-                    }
-                    })
-
-            }
-
-
-            const getRelatedArtists = async(artist) => {;
-
-
-                const url = `https://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=${artist}&api_key=${lastfm_key}&format=json&limit=10`;
-                
-                const response = await fetch(url)
-                .then (response => response.json())
-                .then(data =>{
-                    if (data){
-                        setRelatedArtists(data.similarartists.artist || [])
-                        console.log(data.similarartists.artist)
-                    }
-                    else{
-                        console.log("no results found")
-                    }
-                })
-            }
+            })
+        }
 
         
-
-
-
 
 
         function ArtistProfile(){
@@ -254,13 +197,13 @@ export function ArtistPage(){
 
 
         useEffect(() => {
-            if (accessToken && id) {
-                getArtistInfo(id);
+            if (id) {
+                artistData();
                 getArtistAlbums();
                 getTopTracks();
 
             }
-        }, [accessToken, id]);
+        }, [id]);
 
 
     return(
