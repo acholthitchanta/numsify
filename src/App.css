@@ -6,6 +6,33 @@
   color: white;
 }
 
+.home-page{
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 5rem auto;
+  padding: 2rem;
+  border-radius: 20px;
+  background-color:rgb(133, 215, 133);
+  max-width: 80%;
+}
+
+.home-page > *{
+  color: black;
+}
+
+.home-page h1{
+  font-size: 3rem;
+}
+
+.home-page p{
+  font-size: 1.2rem;
+}
+
+
+
+
+
 li{
   list-style: none;
 }

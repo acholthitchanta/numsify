@@ -58,7 +58,7 @@ export function ArtistPage(){
                 .then(data => {
                 if (data){
                     setInfo(data)
-                    getRelatedArtists(data.name || "Unknown Artist");
+                    getRelatedArtists(data.name)
 
                 }
                 else{
@@ -219,7 +219,7 @@ export function ArtistPage(){
 
             <div className="artist-results">
             <h2>Related Artists</h2>      
-            <ul class="artist-list">
+            <ul className="artist-list">
             {relatedArtists.slice(0,7).map((artist, index)=>(
                 <li className="artist-item" key={artist.url || index}>
                 <>
@@ -245,8 +245,8 @@ export function ArtistPage(){
 
             return(
                 <>
-                    <p>followers</p> <span class="number">{followers}</span>
-                    <p id="popularity">popularity</p> <span class="number">{info.popularity}%</span>
+                    <p>followers</p> <span className="number">{followers}</span>
+                    <p id="popularity">popularity</p> <span className="number">{info.popularity}%</span>
 
                 </>
             )
@@ -275,7 +275,7 @@ export function ArtistPage(){
 
                 </div>
 
-                <div class="info">
+                <div className="info">
                     <div className="top-tracks">
                         <h2>Top Tracks</h2>
                         <TopTracks result={info}/>

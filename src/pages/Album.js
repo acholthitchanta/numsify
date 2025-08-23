@@ -14,7 +14,7 @@ export function AlbumPage(){
         const id = res[res.length - 1];
 
 
-        const [info, setInfo] = useState(null)
+        const [info, setInfo] = useState({})
         const [accessToken, setAccessToken] = useState("")
 
         useEffect(() => {
@@ -31,32 +31,9 @@ export function AlbumPage(){
     
         }, [])
 
-        
+    
 
-        const getAlbumInfo= async() => {
-            var searchParameters = {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'Authorization': 'Bearer ' + accessToken
-                }
-            }
-
-            const response = await fetch(`https://api.spotify.com/v1/albums/${id}`, searchParameters)
-                .then(response => response.json)
-                .then(data => {
-                    if (data){
-                        setInfo(data || [])
-                    }
-                    else{
-                        console.log("no results found")
-                    }
-
-                })
-
-        }
-
-        const getAlbum = async() =>{            
+        const getAlbum = async() =>{      
             var searchParameters = {
                 method: 'GET',
                 headers: {
@@ -143,6 +120,12 @@ export function AlbumPage(){
         function TrackList({result}){
             const tracks = result?.tracks?.items || [];
 
+            function millisToMinutesAndSeconds(millis) {
+                var minutes = Math.floor(millis / 60000);
+                var seconds = ((millis % 60000) / 1000).toFixed(0);
+                return minutes + ":" + (seconds < 10 ? '0' : '') + seconds;
+            }      
+
             return(
                 <ul className="track-results">
                 {tracks.map((trackData, index)=>(
@@ -156,7 +139,7 @@ export function AlbumPage(){
                     </div>
 
              
-                    <audio controls className="track-preview"> <source src={trackData.preview_url}></source></audio>
+                     <p className="play-count">{millisToMinutesAndSeconds(trackData.duration_ms)}</p>
 
                     </>
                     </li>
@@ -170,14 +153,14 @@ export function AlbumPage(){
 
          
         useEffect(()=>{
-                getAlbum()
-        }, [])
+            if (id  && accessToken) getAlbum()
+        }, [id, accessToken])
         
     
 
 
 
-    return(
+    if (info && info.name) return(
         <>
             <Nav/>
 
@@ -186,7 +169,7 @@ export function AlbumPage(){
                 <div className="profile">
                     <AlbumProfile result={info} />
 
-                    <div class="stats">
+                    <div className="stats">
                         <AlbumInfo result={info} />
                     </div>
                 </div>
@@ -201,5 +184,5 @@ export function AlbumPage(){
 
 
         </>
-    )
+    ) 
 }
