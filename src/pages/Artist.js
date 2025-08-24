@@ -3,14 +3,6 @@ import { useState, useEffect } from 'react';
 import { useNavigate, useParams } from 'react-router-dom';
 
 
-const CLIENT_ID="a99c2d456efd4650823ec7ceef8ddcdc"
-const CLIENT_SECRET="072b240960ae4144ad02cdc5b7ad6485"
-
-const lastfm_key = "3b900eb4942c6d4adbd1b70ecf2376a2";
-const lastfm_secret = "ae30be50429067fe1407a804ea85bf34";
-
-
-
 export function ArtistPage(){
         const uri = useParams();
 
@@ -24,14 +16,17 @@ export function ArtistPage(){
         const [relatedArtists, setRelatedArtists] = useState([]);
 
 
-        const artistData = async() =>{
+        const getArtist = async(artistId) =>{
             try{
-                const params = new URLSearchParams({artist: id})
+                const params = new URLSearchParams({artist: artistId})
                 const response = await fetch(`http://localhost:4000/getArtistInfo?${params}`)
                 if(!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
-                setInfo(data)
-                getRelatedArtists(data.name)
+                if (data){
+                    setInfo(data)
+                    getRelatedArtists(data.name)
+
+                }
 
 
             }
@@ -69,24 +64,19 @@ export function ArtistPage(){
         }
 
 
-        const getRelatedArtists = async(artist) => {
-
-            const url = `https://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=${artist}&api_key=${lastfm_key}&format=json&limit=10`;
-            
-            const response = await fetch(url)
-            .then (response => response.json())
-            .then(data =>{
-                if (data){
-                    setRelatedArtists(data.similarartists.artist || [])
-                }
-                else{
-                    console.log("no results found")
-                }
-            })
+        const getRelatedArtists = async(name) => {
+            try{
+                const params = new URLSearchParams({artist: name})
+                const response = await fetch(`http://localhost:4000/getRelatedArtists?${params}`);
+                if(!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                setRelatedArtists(data.similarartists.artist || [])
+                console.log(data.similarartists.artist)
+            }
+            catch (err){
+                console.log(err);
+            }
         }
-
-        
-
 
         function ArtistProfile(){
             const image = info.images ? info.images[0].url : "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg";
@@ -157,6 +147,7 @@ export function ArtistPage(){
 
         function RelatedArtists(){
 
+
             return(
             <>
 
@@ -198,7 +189,7 @@ export function ArtistPage(){
 
         useEffect(() => {
             if (id) {
-                artistData();
+                getArtist(id);
                 getArtistAlbums();
                 getTopTracks();
 

@@ -1,14 +1,6 @@
 import { useState, useEffect } from 'react';
-import React from 'react';
 import { Nav } from '../components/nav';
-import { ArtistPage } from './Artist';
-import { AlbumPage } from './Album';
-import { TrackPage } from './Track';
-import { HashRouter as Router, Routes, Route } from 'react-router-dom';
 import { useNavigate, useParams } from 'react-router-dom';
-
-const CLIENT_ID="a99c2d456efd4650823ec7ceef8ddcdc"
-const CLIENT_SECRET="072b240960ae4144ad02cdc5b7ad6485"
 
 
 
@@ -18,104 +10,62 @@ export function Search() {
   const [track, setTrack] = useState([])
   const [query, setQuery] = useState('')
   const [queryType, setQueryType] = useState('artists')
-   const [accessToken, setAccessToken] = useState("")
-
-    useEffect(() => {
-      var authParameters = {
-        method: 'POST', 
-        headers: {
-          'Content-Type': 'application/x-www-form-urlencoded'
-        },
-        body: 'grant_type=client_credentials&client_id=' + CLIENT_ID + '&client_secret=' + CLIENT_SECRET
-      }
-      fetch('https://accounts.spotify.com/api/token', authParameters)
-        .then(result => result.json())
-        .then(data => setAccessToken(data.access_token))
-
-    }, [])
 
 
     const getArtist = async(query) =>{
       console.log("Search for " + query);
 
-      var searchParameters = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + accessToken
-        }
-      }
-
       const encodedQuery = encodeURIComponent(query.trim());
+          try{
+              const params = new URLSearchParams({query: encodedQuery})
+              const response = await fetch(`http://localhost:4000/searchArtists?${params}`);
+              if(!response.ok) throw new Error('Network response was not ok');
+              const data = await response.json();
+              setArtist(data.artists.items || [])
 
-      //get request using search to get artist id
-      const response = await fetch(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=artist&offset=0&limit=10&numberOfTopResults=5`,searchParameters)
-        .then(response => response.json())
-        .then(data => {
-          if (data){
-            setArtist(data.artists?.items || [])
+          
           }
-          else{
-            setArtist([])
-            console.log("no results found")
+          catch (err){
+              console.log(err);
           }
-        })
     }
-
-
 
     const getAlbum = async(query) =>{
       console.log("Search for " + query);
 
-      var searchParameters = {
-        method: 'GET',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': 'Bearer ' + accessToken
-        }
-      }
-
       const encodedQuery = encodeURIComponent(query.trim());
 
-      //get request using search to get artist id
-      const response = await fetch(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=album&offset=0&limit=10&numberOfTopResults=5`,searchParameters)
-        .then(response => response.json())
-        .then(data => {
-          if (data){
-            setAlbum(data.albums?.items || [])
+          try{
+              const params = new URLSearchParams({query: encodedQuery})
+              const response = await fetch(`http://localhost:4000/searchAlbums?${params}`);
+              if(!response.ok) throw new Error('Network response was not ok');
+              const data = await response.json();
+              setAlbum(data.albums?.items || [])
+
+          
           }
-          else{
-            setAlbum([])
-            console.log("no results found")
+          catch (err){
+              console.log(err);
           }
-        })
     }
-
-
 
 
   const getTrack = async(query) =>{
-    const encodedQuery = encodeURIComponent(query.trim());
+      console.log("Search for " + query);
 
-    var searchParameters = {
-      method: 'GET',
-      headers: {
-        'Content-Type': 'application/json',
-        'Authorization': 'Bearer ' + accessToken
-      }
-    }
+      const encodedQuery = encodeURIComponent(query.trim());
+          try{
+              const params = new URLSearchParams({query: encodedQuery})
+              const response = await fetch(`http://localhost:4000/searchTracks?${params}`);
+              if(!response.ok) throw new Error('Network response was not ok');
+              const data = await response.json();
+              setTrack(data.tracks?.items || [])
 
-    const response = await fetch(`https://api.spotify.com/v1/search?q=${encodedQuery}&type=track&offset=0&limit=10&numberOfTopResults=5`,searchParameters)
-      .then(response => response.json())
-      .then(data => {
-        if (data){
-          setTrack(data.tracks?.items || [])
-        }
-        else{
-          setTrack([])
-          console.log("no results found")
-        }
-      })
+          
+          }
+          catch (err){
+              console.log(err);
+          }
 }
 
 
@@ -137,11 +87,6 @@ export function Search() {
         setAlbum([])
         setArtist([])
       }
-    }
-    else {
-      setArtist([]);
-      setAlbum([]);
-      setTrack([]);
     }
   },[query,queryType])
 
@@ -207,7 +152,7 @@ function ArtistResults({artist}){
     <ul className="search-results">
       {artist.map((artistData, index)=>(
         <>
-        <li className="search-item" onClick={() => {navigate(`/artist/${artistData.uri}`)}} key={artistData.uri || index}>
+        <li className="search-item" onClick={() => {navigate(`/artist/${artistData.uri}`)}} key={artistData.uri}>
           <>
           <img src={artistData?.images[2]?.url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
           <div className="info">
@@ -228,7 +173,7 @@ function AlbumResults({album}){
   return(
     <ul className="search-results">
     {album.map((albumData, index)=>(
-    <li className="search-item"  onClick={() => {navigate(`/album/${albumData.uri}`)}} key={albumData.uri || index}>
+    <li className="search-item"  onClick={() => {navigate(`/album/${albumData.uri}`)}} key={albumData.uri}>
       <>
       <img src={albumData.images[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
 
