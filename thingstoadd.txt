@@ -1,0 +1,4 @@
+- add tags feature to artist page so u can see genres and stuff
+- maybe add tags for specific songs? like playcount, popularity
+- make nav link directs to artists and album
+- make it so u can scroll through the discography instead of it getting clipped out ig

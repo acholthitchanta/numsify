@@ -4,6 +4,11 @@
   background-color: transparent;
   font-family: "Verdana", sans-serif;
   color: white;
+  --main-bg-color: rgb(18, 18, 18);
+  --main-green: rgb(133, 215, 133);
+  --main-bg-lighter: rgb(43, 43, 43);
+  scrollbar-color: var(--main-green) var(--main-bg-lighter);
+
 }
 
 .home-page{
@@ -40,7 +45,6 @@ li{
 body{
   background-color: rgb(18, 18, 18);
   width: 100vw;
-  overflow-x: hidden;
 }
 
 h2{
@@ -222,7 +226,7 @@ nav ul li, nav ul li a{
 }
 
 .discog-results{
-  overflow-x: scroll;
+  overflow-x: scroll;  
   margin: 0;
   display: flex;
   gap: 1rem;
