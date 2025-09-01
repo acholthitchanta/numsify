@@ -13,7 +13,6 @@ export function Search() {
 
 
     const getArtist = async(query) =>{
-      console.log("Search for " + query);
 
       const encodedQuery = encodeURIComponent(query.trim());
           try{
@@ -31,7 +30,6 @@ export function Search() {
     }
 
     const getAlbum = async(query) =>{
-      console.log("Search for " + query);
 
       const encodedQuery = encodeURIComponent(query.trim());
 
@@ -51,7 +49,6 @@ export function Search() {
 
 
   const getTrack = async(query) =>{
-      console.log("Search for " + query);
 
       const encodedQuery = encodeURIComponent(query.trim());
           try{

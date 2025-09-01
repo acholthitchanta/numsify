@@ -35,6 +35,26 @@ export function ArtistPage(){
             }
         }
 
+        const getRelatedArtistData = async(artist) =>{
+            try{
+                const encodedQuery = encodeURIComponent(artist.trim());
+
+                const params = new URLSearchParams({query: encodedQuery})
+                const response = await fetch(`http://localhost:4000/searchArtist?${params}`)
+                if(!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                if (data){
+                    console.log(data.artists.items[0].images[0])
+
+                }
+
+
+            }
+            catch (err){
+                console.log(err);
+            }
+        }
+
         const getArtistAlbums = async() =>{
             try{
                 const params = new URLSearchParams({artist: id})
@@ -147,6 +167,25 @@ export function ArtistPage(){
 
         function RelatedArtists(){
 
+            const renderArtist = (artist,index) =>{
+                const artistImage = artist.image[0]["#text"] || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"
+                const name = artist.name || 'Unknown Artist'
+
+                getRelatedArtistData(name)
+                return(
+                    <li className="artist-item" key={artist.url || index}>
+                    <>
+                    <img src={artistImage}></img>
+                    <div className="artist-info">
+                        {name|| 'Unknown Artist'}
+                    </div>
+                    </>
+                    </li>
+                )
+
+
+            }
+
 
             return(
             <>
@@ -154,15 +193,8 @@ export function ArtistPage(){
             <div className="artist-results">
             <h2>Related Artists</h2>      
             <ul className="artist-list">
-            {relatedArtists.slice(0,7).map((artist, index)=>(
-                <li className="artist-item" key={artist.url || index}>
-                <>
-                <img src={artist.image[0]["#text"] || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
-                <div className="artist-info">
-                    {artist.name || 'Unknown Artist'}
-                </div>
-                </>
-                </li>
+            {relatedArtists.map((artist, index)=>(
+                renderArtist(artist,index)
             )
             )}
             </ul>
