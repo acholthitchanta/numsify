@@ -14,6 +14,7 @@ export function ArtistPage(){
         const [albums, setAlbums] = useState([]);
         const [topTracks, setTopTracks] = useState([]);
         const [relatedArtists, setRelatedArtists] = useState([]);
+        const [tags, setTags] = useState([])
 
 
         const getArtist = async(artistId) =>{
@@ -25,6 +26,8 @@ export function ArtistPage(){
                 if (data){
                     setInfo(data)
                     getRelatedArtists(data.name)
+                    getArtistTags(data.name);
+
 
                 }
 
@@ -44,14 +47,15 @@ export function ArtistPage(){
                 if(!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 if (data){
-                    console.log(data.artists.items[0].images[0])
+                    return data.artists.items[0].images[0].url
 
                 }
-
+                return null
 
             }
             catch (err){
                 console.log(err);
+                return null
             }
         }
 
@@ -91,12 +95,29 @@ export function ArtistPage(){
                 if(!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 setRelatedArtists(data.similarartists.artist || [])
-                console.log(data.similarartists.artist)
             }
             catch (err){
                 console.log(err);
             }
         }
+
+
+
+            const getArtistTags = async(name) => {
+                try {
+                    const params = new URLSearchParams({name: name})
+
+                    const response = await fetch(`http://localhost:4000/getArtistTags?${params}`);
+                    if (!response.ok) throw new Error('Network response was not ok');
+                    const data = await response.json();
+                    console.log(data)
+                    setTags(data?.toptags?.tag)
+                } catch (err) {
+                    console.log(err);
+                }
+            };
+
+
 
         function ArtistProfile(){
             const image = info.images ? info.images[0].url : "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg";
@@ -122,7 +143,7 @@ export function ArtistPage(){
                 <li className="discog-item" key={discogData.id || index}>
                 <>
                 <img src={discogData.images[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
-                <div className="info">
+                <div className="album-info">
                     {discogData.name || 'Unknown Album'} ({discogData.release_date.slice(0,4) })
                 </div>
                 </>
@@ -166,42 +187,42 @@ export function ArtistPage(){
         }
 
         function RelatedArtists(){
+            const renderArtist = (artist, index) => {
+                const [artistImage, setArtistImage] = useState("https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg")
 
-            const renderArtist = (artist,index) =>{
-                const artistImage = artist.image[0]["#text"] || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"
-                const name = artist.name || 'Unknown Artist'
+                useEffect(() => {
+                    const fetchImage = async() => {
+                            const name = artist.name || 'Unknown Artist';
+                            const imageUrl = await getRelatedArtistData(name)
+                            setArtistImage(imageUrl || 'https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg')   
+                        }
+                    fetchImage()
 
-                getRelatedArtistData(name)
-                return(
-                    <li className="artist-item" key={artist.url || index}>
-                    <>
-                    <img src={artistImage}></img>
-                    <div className="artist-info">
-                        {name|| 'Unknown Artist'}
+                }, [relatedArtists])
+
+
+                    const name = artist.name || 'Unknown Artist';
+                    return (
+                        <li className="artist-item" key={artist.id || index}>
+                            <img src={artistImage} alt={name} />
+                            <div className="artist-info">{name}</div>
+                        </li>
+                    );
+                };
+
+            return (
+                <>
+                    <div className="artist-results">
+                        <h2>Related Artists</h2>      
+                        <ul className="artist-list">
+                            {relatedArtists?.map(renderArtist) || <li>No artists available</li>}
+                        </ul>
+
                     </div>
-                    </>
-                    </li>
-                )
+                </>
+  
+            );
 
-
-            }
-
-
-            return(
-            <>
-
-            <div className="artist-results">
-            <h2>Related Artists</h2>      
-            <ul className="artist-list">
-            {relatedArtists.map((artist, index)=>(
-                renderArtist(artist,index)
-            )
-            )}
-            </ul>
-
-            </div>
-            </>
-            )
 
         }
 
@@ -224,7 +245,6 @@ export function ArtistPage(){
                 getArtist(id);
                 getArtistAlbums();
                 getTopTracks();
-
             }
         }, [id]);
 
@@ -234,7 +254,7 @@ export function ArtistPage(){
             <Nav/>
             <div className="page">
                 <div className="profile">
-                    <ArtistProfile result={info} />
+                    <ArtistProfile />
                     <div className="stats">
                         <ArtistStats result={info}/>
                     </div>

@@ -118,7 +118,7 @@ router.get('/searchAlbums', async (req, res) => {
             }
         };
 
-        const artistRes = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=album&offset=0&limit=10&numberOfTopResults=5`, searchParameters);
+        const artistRes = await fetch(`https://api.spotify.com/v1/search?q=${query}&type=album&offset=0`, searchParameters);
         const artistData = await artistRes.json();
         if (artistData && !artistData.error) {
             res.send(artistData);
@@ -337,6 +337,32 @@ router.get("/getLastfmArtist", async (req,res) => {
         }
 
         const response = await fetch(`https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&mbid=${mbid}&api_key=${process.env.LASTFM_KEY}&format=json`)
+        const data = await response.json();
+        console.log(data)
+            if (data && !data.error){
+                res.send(data)
+            }
+            else{
+                res.status(404).json({error: 'Artists not found'});
+            }
+    }
+    catch (err){
+        res.status(500).json({error: 'Server error', details: err.message})
+    }
+
+})
+
+
+router.get("/getArtistTags", async (req,res) => {
+
+    const name = req.query.name;
+
+    try{
+        if (!name) {
+            return res.status(400).json({ error: 'Missing artist parameter' });
+        }
+
+        const response = await fetch(`https://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&artist=${name}&api_key=${process.env.LASTFM_KEY}&format=json`)
         const data = await response.json();
         console.log(data)
             if (data && !data.error){

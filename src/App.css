@@ -121,6 +121,10 @@ nav ul li, nav ul li a{
   font-size: 1.3rem;
 }
 
+.album-info{
+  font-size: 1.2rem;
+}
+
 .info> span{
   margin-left: 0.5rem;
 }
