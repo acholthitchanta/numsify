@@ -16,6 +16,8 @@ export function AlbumPage(){
 
         const [info, setInfo] = useState({})
         const [accessToken, setAccessToken] = useState("")
+        const [tags, setTags] = useState([])
+
 
         useEffect(() => {
             var authParameters = {
@@ -32,6 +34,19 @@ export function AlbumPage(){
         }, [])
 
     
+        const getAlbumTags = async(name, artist) =>{
+            try{
+                const params = new URLSearchParams({album: name, artist: artist});
+                const response = await fetch(`http://localhost:4000/getAlbumTags?${params}`);
+                const data = await response.json();
+                setTags(data?.toptags?.tag)
+
+            }
+            catch (err){
+                console.log(err)
+            }
+
+        }
 
         const getAlbum = async() =>{      
             var searchParameters = {
@@ -47,7 +62,7 @@ export function AlbumPage(){
                 .then(data => {
                 if (data){
                     setInfo(data || [])
-                    console.log(data)
+                    getAlbumTags(data.name, data.artists[0].name)
                 }
                 else{
                     console.log("no results found")
@@ -59,8 +74,6 @@ export function AlbumPage(){
 
 
         function Artists({result}){
-
-
             const artists = result?.artists || [];
 
             return(            
@@ -75,16 +88,32 @@ export function AlbumPage(){
 
         }
 
+        function AlbumTags(){
+            return(
+                <ul className="tags">
+                    {tags.slice(0,5).map((tag, index) =>(
+                        <>
+                            <div className ="tag">
+                                <li key={index}> {tag.name}</li>
+                                <div className="bar" style={{ width: `max(${(tag.count +"").length}*15px + 15px, ${tag.count}%)` }}>{tag.count}%</div>
+                            </div>
+
+                        </>
+
+                    ))}
+
+                </ul>
+            )
+        }
+
         function AlbumProfile({result}){
-
-
             const albumCover = result?.images[0]?.url;
             const albumTitle = result?.name;
 
         
             return(
                 <>
-                    <img src={albumCover || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+                    <img loading="lazy" src={albumCover || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
                     <h1>{albumTitle}</h1>
                 </>
 
@@ -170,7 +199,10 @@ export function AlbumPage(){
                     <AlbumProfile result={info} />
 
                     <div className="stats">
+                        <AlbumTags />
+
                         <AlbumInfo result={info} />
+                        
                     </div>
                 </div>
 

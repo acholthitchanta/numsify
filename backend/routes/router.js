@@ -371,5 +371,34 @@ router.get("/getArtistTags", async (req,res) => {
 
 })
 
+router.get("/getAlbumTags", async (req,res) => {
+    const album = encodeURIComponent(req.query.album.trim());
+    const artist = encodeURIComponent(req.query.artist.trim());
+
+
+    try{
+        if (!album) {
+            return res.status(400).json({ error: 'Missing album parameter' });
+        }
+        else if (!artist) {
+            return res.status(400).json({ error: 'Missing artist parameter' });
+        }
+
+        const response = await fetch(`https://ws.audioscrobbler.com/2.0/?method=album.gettoptags&artist=${artist}&album=${album}&api_key=${process.env.LASTFM_KEY}&format=json`)
+        const data = await response.json();
+            if (data && !data.error){
+                res.send(data)
+                console.log("hi")
+            }
+            else{
+                res.status(404).json({error: 'Artists not found'});
+            }
+    }
+    catch (err){
+        res.status(500).json({error: 'Server error', details: err.message})
+    }
+
+})
+
 
 module.exports = router

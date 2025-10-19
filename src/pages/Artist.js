@@ -21,7 +21,6 @@ export function ArtistPage(){
             try{
                 const params = new URLSearchParams({artist: artistId})
                 const response = await fetch(`http://localhost:4000/getArtistInfo?${params}`)
-                if(!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 if (data){
                     setInfo(data)
@@ -42,7 +41,6 @@ export function ArtistPage(){
 
                 const params = new URLSearchParams({query: encodedQuery})
                 const response = await fetch(`http://localhost:4000/searchArtist?${params}`)
-                if(!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 if (data){
                     return data.artists.items[0].images[0].url
@@ -61,7 +59,6 @@ export function ArtistPage(){
             try{
                 const params = new URLSearchParams({artist: id})
                 const response = await fetch(`http://localhost:4000/getArtistAlbums?${params}`);
-                if(!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 setAlbums(data.items)
             
@@ -75,7 +72,6 @@ export function ArtistPage(){
             try{
                 const params = new URLSearchParams({artist: id})
                 const response = await fetch(`http://localhost:4000/getArtistTracks?${params}`);
-                if(!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 setTopTracks(data.tracks)
             
@@ -90,7 +86,6 @@ export function ArtistPage(){
             try{
                 const params = new URLSearchParams({artist: name})
                 const response = await fetch(`http://localhost:4000/getRelatedArtists?${params}`);
-                if(!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 setRelatedArtists(data.similarartists.artist || [])
             }
@@ -106,7 +101,6 @@ export function ArtistPage(){
                 const params = new URLSearchParams({name: name})
 
                 const response = await fetch(`http://localhost:4000/getArtistTags?${params}`);
-                if (!response.ok) throw new Error('Network response was not ok');
                 const data = await response.json();
                 setTags(data?.toptags?.tag)
             } catch (err) {
@@ -141,7 +135,7 @@ export function ArtistPage(){
             return(
                 <>
                     <div className="profile">
-                        <img src={image}></img>
+                        <img loading="lazy" src={image}></img>
                         <h1>{name}</h1>
                     </div>
 
@@ -157,7 +151,7 @@ export function ArtistPage(){
             {albums.toReversed().filter(discogData => discogData.album_type == "album").map((discogData, index)=>(
                 <li className="discog-item" key={discogData.id || index}>
                 <>
-                <img src={discogData.images[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+                <img loading="lazy" src={discogData.images[0].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
                 <div className="album-info">
                     {discogData.name || 'Unknown Album'} ({discogData.release_date.slice(0,4) })
                 </div>
@@ -185,7 +179,7 @@ export function ArtistPage(){
                 <>
 
                 <div className="track-info">
-                    <img src={trackData.album.images[2].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
+                    <img loading="lazy" src={trackData.album.images[2].url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
                     <div className="track-name">
                         {trackData.name || 'Unknown track'}
                     </div>
@@ -204,19 +198,14 @@ export function ArtistPage(){
         function RelatedArtists(){
             const renderArtist = (artist, index) => {
                 const [artistImage, setArtistImage] = useState("https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg")
-
-                useEffect(() => {
-                    const fetchImage = async() => {
-                            const name = artist.name || 'Unknown Artist';
-                            const imageUrl = await getRelatedArtistData(name)
-                            setArtistImage(imageUrl || 'https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg')   
-                        }
-                    fetchImage()
-
-                }, [relatedArtists])
-
-
-                    const name = artist.name || 'Unknown Artist';
+                
+                async function fetchImage(name) {
+                    const imageUrl = await getRelatedArtistData(name)
+                    setArtistImage(imageUrl || 'https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg')   
+                }
+                
+                const name = artist.name || 'Unknown Artist';
+                fetchImage(name);
                     return (
                         <li className="artist-item" key={artist.id || index}>
                             <img src={artistImage} alt={name} />
