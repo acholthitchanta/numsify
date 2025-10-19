@@ -217,9 +217,7 @@ router.get('/getArtistInfo', async (req, res) => {
 
 
 router.get('/getArtistAlbums', async (req, res) => {
-    
     const artistId = req.query.artist;
-
     if (!artistId) {
         return res.status(400).json({ error: 'Missing artist parameter' });
     }
@@ -352,14 +350,12 @@ router.get("/getLastfmArtist", async (req,res) => {
 
 
 router.get("/getArtistTags", async (req,res) => {
-
     const name = req.query.name;
 
     try{
         if (!name) {
             return res.status(400).json({ error: 'Missing artist parameter' });
         }
-
         const response = await fetch(`https://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&artist=${name}&api_key=${process.env.LASTFM_KEY}&format=json`)
         const data = await response.json();
             if (data && !data.error){
