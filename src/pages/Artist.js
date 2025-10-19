@@ -145,7 +145,6 @@ export function ArtistPage(){
         }
 
         function DiscogResults(){
-            
             return(
             <ul className="discog-results">
             {albums.toReversed().filter(discogData => discogData.album_type == "album").map((discogData, index)=>(
