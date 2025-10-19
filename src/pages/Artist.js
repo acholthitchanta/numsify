@@ -27,8 +27,6 @@ export function ArtistPage(){
                     setInfo(data)
                     getRelatedArtists(data.name)
                     getArtistTags(data.name);
-
-
                 }
 
 
@@ -103,19 +101,36 @@ export function ArtistPage(){
 
 
 
-            const getArtistTags = async(name) => {
-                try {
-                    const params = new URLSearchParams({name: name})
+        const getArtistTags = async(name) => {
+            try {
+                const params = new URLSearchParams({name: name})
 
-                    const response = await fetch(`http://localhost:4000/getArtistTags?${params}`);
-                    if (!response.ok) throw new Error('Network response was not ok');
-                    const data = await response.json();
-                    console.log(data)
-                    setTags(data?.toptags?.tag)
-                } catch (err) {
-                    console.log(err);
-                }
-            };
+                const response = await fetch(`http://localhost:4000/getArtistTags?${params}`);
+                if (!response.ok) throw new Error('Network response was not ok');
+                const data = await response.json();
+                setTags(data?.toptags?.tag)
+            } catch (err) {
+                console.log(err);
+            }
+        };
+
+        function ArtistTags(){
+            return(
+                <ul className="tags">
+                    {tags.slice(0,5).map((tag, index) =>(
+                        <>
+                            <div className ="tag">
+                                <li key={index}> {tag.name}</li>
+                                <div className="bar" style={{ width: `max(${(tag.count +"").length}*15px + 15px, ${tag.count}%)` }}>{tag.count}%</div>
+                            </div>
+
+                        </>
+
+                    ))}
+
+                </ul>
+            )
+        }
 
 
 
@@ -256,6 +271,7 @@ export function ArtistPage(){
                 <div className="profile">
                     <ArtistProfile />
                     <div className="stats">
+                        <ArtistTags />
                         <ArtistStats result={info}/>
                     </div>
 

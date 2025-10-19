@@ -313,7 +313,6 @@ router.get("/getRelatedArtists", async (req,res) => {
 
         const response = await fetch(`https://ws.audioscrobbler.com/2.0/?method=artist.getsimilar&artist=${artist}&api_key=${process.env.LASTFM_KEY}&format=json&limit=7`)
         const data = await response.json();
-        console.log(data)
             if (data && !data.error){
                 res.send(data)
             }
@@ -338,7 +337,6 @@ router.get("/getLastfmArtist", async (req,res) => {
 
         const response = await fetch(`https://ws.audioscrobbler.com/2.0/?method=artist.getinfo&mbid=${mbid}&api_key=${process.env.LASTFM_KEY}&format=json`)
         const data = await response.json();
-        console.log(data)
             if (data && !data.error){
                 res.send(data)
             }
@@ -364,7 +362,6 @@ router.get("/getArtistTags", async (req,res) => {
 
         const response = await fetch(`https://ws.audioscrobbler.com/2.0/?method=artist.gettoptags&artist=${name}&api_key=${process.env.LASTFM_KEY}&format=json`)
         const data = await response.json();
-        console.log(data)
             if (data && !data.error){
                 res.send(data)
             }

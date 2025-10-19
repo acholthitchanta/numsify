@@ -149,7 +149,7 @@ function ArtistResults({artist}){
     <ul className="search-results">
       {artist.map((artistData, index)=>(
         <>
-        <li className="search-item" onClick={() => {navigate(`/artist/${artistData.uri}`)}} key={artistData.uri}>
+        <li className="search-item" onClick={() => {navigate(`/artist/${artistData.uri}`)}} key={index}>
           <>
           <img src={artistData?.images[2]?.url || "https://i.pinimg.com/736x/c0/27/be/c027bec07c2dc08b9df60921dfd539bd.jpg"}></img>
           <div className="info">

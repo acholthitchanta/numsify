@@ -78,10 +78,17 @@ nav ul{
   gap: 3rem;
 }
 
-nav ul li, nav ul li a{
+nav ul li a{
   list-style: none;
   text-decoration: none;
 }
+
+nav ul li a:hover{
+  text-decoration: underline;
+}
+
+
+
 
 
 
@@ -230,6 +237,7 @@ nav ul li, nav ul li a{
   margin: 0;
   display: flex;
   gap: 1rem;
+  padding: 0 1rem 1rem;
 }
 
 .discog-item{
@@ -311,6 +319,7 @@ nav ul li, nav ul li a{
 .stats{
   display: flex;
   flex-direction: column;
+  width: 350px;
 }
 
 /*album search page*/
@@ -335,12 +344,34 @@ nav ul li, nav ul li a{
 }
 
 
-
-
-
 .discography{
   margin: 0 auto;
   margin-left: 0;
+}
+
+.tags{
+  display: grid;
+  flex-wrap: wrap;
+  gap: 1rem;
+  padding: 0;
+}
+
+
+.tag{
+  background-color: var(--main-bg-lighter);
+  padding: 0.5rem;
+  border-radius: 10px;
+}
+
+.bar{
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  background-color: var(--main-green);
+  height: 1rem;
+  color: var(--main-bg-color);
+  padding: 0.5rem 0;
+  margin-top: 0.5rem;
 }
 
 
